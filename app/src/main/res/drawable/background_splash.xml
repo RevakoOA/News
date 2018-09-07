@@ -5,10 +5,11 @@
         android:drawable="@color/colorPrimary"/>
 
     <item
-        android:left="20dp"
-        android:right="20dp"
-        android:gravity="center"
-        android:drawable="@drawable/load">
+        android:left="50dp"
+        android:right="50dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/load"/>
     </item>
 
 </layer-list>
