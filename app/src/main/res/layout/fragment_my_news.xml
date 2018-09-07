@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<include layout="@layout/shared_sort_selector"/>
+<include android:id="@+id/selector" layout="@layout/shared_sort_selector"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

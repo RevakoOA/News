@@ -14,6 +14,7 @@ import com.facebook.applinks.AppLinkData
 import com.just_me.news.net.Service
 import com.just_me.news.news.MainPagerAdapter
 import com.just_me.news.news.MyNewsFragment
+import com.just_me.news.news.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
 import com.just_me.news.news.R
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
@@ -77,12 +78,19 @@ class MainActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewPager.currentItem = 1
             }
         })
 
         // set adapter
-        val fragments = arrayListOf<Fragment>(MyNewsFragment(), MyNewsFragment(), MyNewsFragment(), MyNewsFragment())
+        val bundle = Bundle()
+        bundle.putBoolean(IS_SELECTOR_VISIBLE, false)
+        val topStories = MyNewsFragment()
+        topStories.arguments = bundle
+        val popular = MyNewsFragment()
+        popular.arguments = bundle
+        val video = MyNewsFragment()
+        video.arguments = bundle
+        val fragments = arrayListOf<Fragment>(topStories, MyNewsFragment(), popular, video)
         val items = names.zip(fragments)
         val pagerAdapter = MainPagerAdapter(items, supportFragmentManager)
         viewPager.adapter = pagerAdapter
@@ -90,13 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun lockViewPager() {
-        viewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {}
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-            override fun onPageSelected(position: Int) {
-                viewPager.currentItem = 1
-            }
-        })
+
     }
 
 
