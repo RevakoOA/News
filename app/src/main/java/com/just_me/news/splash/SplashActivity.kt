@@ -1,9 +1,9 @@
-package com.just_me.news.news.splash
+package com.just_me.news.splash
 
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.just_me.news.news.MainActivity
+import com.just_me.news.MainActivity
 
 class SplashActivity : AppCompatActivity() {
 
