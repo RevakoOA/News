@@ -1,19 +1,29 @@
 package com.just_me.news.net
 
+import com.google.gson.JsonObject
+import com.just_me.news.RecyclerData
 import com.just_me.news.core.exception.Failure
 import com.just_me.news.core.functional.Either
 import com.just_me.news.core.platform.NetworkHandler
 import retrofit2.Call
 
 interface DataRepository {
-    fun getData(country: String): Either<Failure, String>
+    fun getCode(country: String): Either<Failure, String>
+    fun getRecyclerData(): Either<Failure, List<RecyclerData>>
 
     class Network constructor(private val networkHandler: NetworkHandler,
-                              private val service: Service): DataRepository {
+                              private val serviceApi: ServiceApi): DataRepository {
 
-        override fun getData(country: String): Either<Failure, String> {
+        override fun getCode(country: String): Either<Failure, String> {
             return when (networkHandler.isConnected) {
-                true -> request(service.getData(country), {it}, String())
+                true -> request(serviceApi.getData(country), {it}, String())
+                false, null -> Either.Left(Failure.NetworkConnection())
+            }
+        }
+
+        override fun getRecyclerData(): Either<Failure, List<RecyclerData>> {
+            return when (networkHandler.isConnected) {
+                true -> request(serviceApi.getRecyclerData(), {it}, emptyList())
                 false, null -> Either.Left(Failure.NetworkConnection())
             }
         }

@@ -7,6 +7,7 @@
 <include android:id="@+id/selector" layout="@layout/shared_sort_selector"/>
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="fill_parent">
 
