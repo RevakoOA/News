@@ -26,6 +26,7 @@ class MyNewsFragment: Fragment() {
         const val IS_SELECTOR_VISIBLE = "isSelectorVisible"
     }
 
+    lateinit var dataUseCase: DataRecyclerUseCase
     lateinit var serviceApi: ServiceApi
     lateinit var datas: List<RecyclerData>
 
@@ -33,8 +34,7 @@ class MyNewsFragment: Fragment() {
         super.onCreate(savedInstanceState)
         serviceApi = (activity?.applicationContext as NewsApplication).retrofit.create(ServiceApi::class.java)
         val network = DataRepository.Network(NetworkHandler(context!!), serviceApi)
-        val dataUseCase = DataRecyclerUseCase(network)
-        dataUseCase(UseCase.None()) {it.either(::handleFailure,::handleData)}
+        dataUseCase = DataRecyclerUseCase(network)
     }
 
     protected fun handleFailure(failure: Failure) {
@@ -42,7 +42,6 @@ class MyNewsFragment: Fragment() {
     }
 
     private fun handleData(data: List<RecyclerData>) {
-        Log.d(TAG, data.toString())
         datas = data
         val adapter = MyRecyclerAdapter(datas)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
@@ -57,6 +56,7 @@ class MyNewsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val selectorVisibility = arguments?.getBoolean(IS_SELECTOR_VISIBLE, true)?:true
         hideSelector(!selectorVisibility)
+        dataUseCase(UseCase.None()) {it.either(::handleFailure,::handleData)}
     }
 
     private fun hideSelector(hide: Boolean) {

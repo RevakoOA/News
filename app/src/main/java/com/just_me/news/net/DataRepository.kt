@@ -16,7 +16,7 @@ interface DataRepository {
 
         override fun getCode(country: String): Either<Failure, String> {
             return when (networkHandler.isConnected) {
-                true -> request(serviceApi.getData(country), {it}, String())
+                true -> request(serviceApi.getData(country), {it}, "")
                 false, null -> Either.Left(Failure.NetworkConnection())
             }
         }
