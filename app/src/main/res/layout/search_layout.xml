@@ -38,7 +38,7 @@
     <CheckedTextView
         android:id="@+id/tvcTopStories"
         style="@style/WhiteSearchCheckedTextView"
-        android:text="Top Stories"
+        android:text="@string/topStories"
         app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/etSearch" />
@@ -51,7 +51,7 @@
     <CheckedTextView
         android:id="@+id/tvcMyNews"
         style="@style/WhiteSearchCheckedTextView"
-        android:text="My News"
+        android:text="@string/myNews"
         app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/v1" />
@@ -64,7 +64,7 @@
     <CheckedTextView
         android:id="@+id/tvcPopular"
         style="@style/WhiteSearchCheckedTextView"
-        android:text="Popular"
+        android:text="@string/popular"
         app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/v2" />
@@ -77,7 +77,7 @@
     <CheckedTextView
         android:id="@+id/tvcVideo"
         style="@style/WhiteSearchCheckedTextView"
-        android:text="Video"
+        android:text="@string/video"
         app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/v3" />

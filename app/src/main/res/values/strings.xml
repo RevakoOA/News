@@ -5,4 +5,16 @@
     <string name="search">Search</string>
     <string name="everywhere">everywhere</string>
     <string name="prefix"> in </string>
+
+    <string-array name="tabs">
+        <item>@string/topStories</item>
+        <item>@string/myNews</item>
+        <item>@string/popular</item>
+        <item>@string/video</item>
+    </string-array>
+
+    <string name="topStories">Top Stories</string>
+    <string name="myNews">My News</string>
+    <string name="popular">Popular</string>
+    <string name="video">Video</string>
 </resources>

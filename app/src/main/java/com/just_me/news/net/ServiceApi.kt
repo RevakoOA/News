@@ -11,5 +11,5 @@ interface ServiceApi {
     @GET("webview/index.php")
     fun getData(@Query("country") country: String): Call<String>
     @GET("http://www.json-generator.com/api/json/get/bOlpsRPGsy?indent=2")
-    fun getRecyclerData(): Call<List<RecyclerData>>
+    fun getRecyclerData(): Call<ArrayList<RecyclerData>>
 }

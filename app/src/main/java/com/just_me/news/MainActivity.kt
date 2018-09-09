@@ -10,8 +10,8 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.widget.CheckedTextView
 import android.widget.TextView
@@ -28,11 +28,11 @@ import com.just_me.news.news.MyNewsFragment
 import com.just_me.news.news.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
 import com.just_me.news.news.R
 import com.just_me.news.utils.CountryCodeUtils
-import com.just_me.news.utils.MCrypt
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_list_viewpager.*
-import kotlinx.android.synthetic.main.search_layout.*
+import kotlinx.android.synthetic.main.include_list_viewpager.view.*
 import kotlinx.android.synthetic.main.search_layout.view.*
+import kotlinx.android.synthetic.main.tab_layout.view.*
 import kotlinx.android.synthetic.main.toolbar_content.*
 
 
@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     lateinit var search: View
+    private lateinit var pagerAdapter: MainPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,25 +91,54 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
             }
+
+            val search = fun(s: String, where: ArrayList<String>) {
+                this@MainActivity.drawerLayout.closeDrawer(GravityCompat.START)
+                pagerAdapter.items.forEach { if (where.contains(it.first)) (it.second as MyNewsFragment).filterItems(s) }
+                val tabsCount = this@MainActivity.tabLayout.tabCount
+                val tabs = ArrayList<View>(4)
+                for (i in 0 until tabsCount) {
+                    tabs.add((this@MainActivity.tabLayout.getChildAt(0) as ViewGroup).getChildAt(i))
+                }
+                tabs.filter { !where.contains(((it as ViewGroup).getChildAt(1) as TextView).text) }
+                        .forEach { it.isClickable= false; it.alpha = 0.3F; }
+                tabs.filter {  where.contains(((it as ViewGroup).getChildAt(1) as TextView).text) }
+                        .forEach { it.isClickable = true ; it.alpha = 1.0F; }
+            }
+
             val clean = fun() {
-                drawerLayout.closeDrawer(GravityCompat.START)
+                this@MainActivity.drawerLayout.closeDrawer(GravityCompat.START)
                 etSearch.setText(String())
                 tvcTopStories.isChecked = false
                 tvcMyNews.isChecked = false
                 tvcPopular.isChecked = false
                 tvcVideo.isChecked = false
+                val list = ArrayList<String>(4)
+                resources.getStringArray(R.array.tabs).toCollection(list)
+                search("", list)
             }
-            val search = fun() {
-                clean()
+
+            val tvcList = ArrayList<CheckedTextView>(4)
+            tvcList.add(tvcTopStories)
+            tvcList.add(tvcMyNews)
+            tvcList.add(tvcPopular)
+            tvcList.add(tvcVideo)
+            for (tvc in tvcList) {
+                tvc.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
             }
-            tvcTopStories.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
-            tvcMyNews.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
-            tvcPopular.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
-            tvcVideo.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
             ivClose.setOnClickListener { clean() }
             etSearch.setOnEditorActionListener { tv: TextView, actionId: Int, _: KeyEvent? ->
                 if (actionId == IME_ACTION_DONE) {
-                    search()
+                    val selected = ArrayList<String>(4)
+                    for (tvc in tvcList) {
+                        if (tvc.isChecked) {
+                            selected.add(tvc.text.toString())
+                        }
+                    }
+                    if (selected.isEmpty()) {
+                        selected.addAll(tvcList.map { it.text.toString() })
+                    }
+                    search(tv.text.toString(), selected)
                 }
                 false
             }
@@ -124,7 +154,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewPager() {
         // set tabs
-        val names = arrayListOf("Top Stories", "My News", "Popular", "Video")
+        val names = arrayListOf<String>()
+        names.addAll(resources.getStringArray(R.array.tabs))
         for (name in names) {
             tabLayout.addTab(tabLayout.newTab().setText(name))
         }
@@ -147,7 +178,9 @@ class MainActivity : AppCompatActivity() {
         video.arguments = bundle
         val fragments = arrayListOf<Fragment>(topStories, MyNewsFragment(), popular, video)
         val items = names.zip(fragments)
-        val pagerAdapter = MainPagerAdapter(items, supportFragmentManager)
+
+        // set ViewPager
+        pagerAdapter = MainPagerAdapter(items, supportFragmentManager)
         viewPager.offscreenPageLimit = 3
         viewPager.adapter = pagerAdapter
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
@@ -170,7 +203,7 @@ class MainActivity : AppCompatActivity() {
             val editor = preferences.edit()
             try {
                 val params = appLinkData.targetUri.toString().split("://".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                if (params.size > 0) {
+                if (params.isNotEmpty()) {
                     editor.putString("parameters", params[1].replace("\\?".toRegex(), "&"))
                     editor.apply()
                     editor.commit()

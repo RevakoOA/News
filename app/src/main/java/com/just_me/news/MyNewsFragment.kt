@@ -28,7 +28,8 @@ class MyNewsFragment: Fragment() {
 
     lateinit var dataUseCase: DataRecyclerUseCase
     lateinit var serviceApi: ServiceApi
-    lateinit var datas: List<RecyclerData>
+    lateinit var datas : ArrayList<RecyclerData>
+    lateinit var adapter: MyRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +42,13 @@ class MyNewsFragment: Fragment() {
         Log.e(TAG, failure.toString())
     }
 
-    private fun handleData(data: List<RecyclerData>) {
+    private fun handleData(data: ArrayList<RecyclerData>) {
         datas = data
-        val adapter = MyRecyclerAdapter(datas)
+        if (!::adapter.isInitialized) {
+            adapter = MyRecyclerAdapter(datas)
+        } else {
+            adapter
+        }
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = adapter
     }
@@ -61,5 +66,12 @@ class MyNewsFragment: Fragment() {
 
     private fun hideSelector(hide: Boolean) {
         selector.visibility = if (hide) GONE else VISIBLE
+    }
+
+    /**
+     * Show only if {@param s} contains in data item
+     */
+    fun filterItems(s: String) {
+        adapter.filterDatas(s)
     }
 }

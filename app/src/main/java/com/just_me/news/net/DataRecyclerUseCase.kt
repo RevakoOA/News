@@ -5,9 +5,9 @@ import com.just_me.news.RecyclerData
 import com.just_me.news.core.exception.Failure
 import com.just_me.news.core.functional.Either
 
-class DataRecyclerUseCase(private val dataRepository: DataRepository): UseCase<List<RecyclerData>, UseCase.None>() {
+class DataRecyclerUseCase(private val dataRepository: DataRepository): UseCase<ArrayList<RecyclerData>, UseCase.None>() {
 
-    override suspend fun run(params: UseCase.None): Either<Failure, List<RecyclerData>> {
+    override suspend fun run(params: UseCase.None): Either<Failure, ArrayList<RecyclerData>> {
         return dataRepository.getRecyclerData()
     }
 }

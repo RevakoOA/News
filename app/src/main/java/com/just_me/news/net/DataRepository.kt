@@ -9,7 +9,7 @@ import retrofit2.Call
 
 interface DataRepository {
     fun getCode(country: String): Either<Failure, String>
-    fun getRecyclerData(): Either<Failure, List<RecyclerData>>
+    fun getRecyclerData(): Either<Failure, ArrayList<RecyclerData>>
 
     class Network constructor(private val networkHandler: NetworkHandler,
                               private val serviceApi: ServiceApi): DataRepository {
@@ -21,9 +21,9 @@ interface DataRepository {
             }
         }
 
-        override fun getRecyclerData(): Either<Failure, List<RecyclerData>> {
+        override fun getRecyclerData(): Either<Failure, ArrayList<RecyclerData>> {
             return when (networkHandler.isConnected) {
-                true -> request(serviceApi.getRecyclerData(), {it}, emptyList())
+                true -> request(serviceApi.getRecyclerData(), {it}, ArrayList())
                 false, null -> Either.Left(Failure.NetworkConnection())
             }
         }
