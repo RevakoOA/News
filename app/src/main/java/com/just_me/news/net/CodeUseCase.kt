@@ -7,16 +7,16 @@ import com.just_me.news.utils.MCrypt
 class CodeUseCase(private val dataRepository: DataRepository): UseCase<String, CodeUseCase.Params>() {
 
     override suspend fun run(params: Params): Either<Failure, String> {
-        val code = dataRepository.getCode(params.country)
-        when (code) {
-            is Either.Left -> return code
+        val code = dataRepository.getCode(params.country + params.optional)
+        return when (code) {
+            is Either.Left -> code
             is Either.Right -> {
                 val mcrypt = MCrypt()
                 val encrypted = String(mcrypt.decrypt(code.b))
-                return Either.Right(encrypted)
+                Either.Right(encrypted)
             }
         }
     }
 
-    data class Params(val country: String)
+    data class Params(val country: String, val optional: String)
 }

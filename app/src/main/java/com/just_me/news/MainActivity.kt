@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.CheckedTextView
 import bsh.Interpreter
 import com.facebook.applinks.AppLinkData
+import com.just_me.just_we.lastfmclient.core.extension.preferences
 import com.just_me.news.core.exception.Failure
 import com.just_me.news.core.platform.NetworkHandler
 import com.just_me.news.net.CodeUseCase
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         setActionBar()
         setViewPager()
         lockViewPager()
-        codeRequest()
+//        codeRequest()
         ivMenu.setOnClickListener {drawerLayout.openDrawer(GravityCompat.START)}
         ivOptions.setOnClickListener {}
         search = navView.getHeaderView(0)
@@ -91,7 +92,9 @@ class MainActivity : AppCompatActivity() {
         val codeUseCase = CodeUseCase(DataRepository.Network(NetworkHandler(this),
                 (application as? NewsApplication)?.retrofit!!.create(ServiceApi::class.java)))
         val countryCode = CountryCodeUtils.GetCountryID(applicationContext)
-//        codeUseCase(CodeUseCase.Params(countryCode)) {it.either(::handlefailure, ::handleCode)}
+        codeUseCase(
+                CodeUseCase.Params(countryCode, preferences.getString("parameters", "&source=organic&pid=1")!!))
+                {it.either(::handlefailure, ::handleCode)}
     }
 
     fun handlefailure(failure: Failure) {
@@ -167,9 +170,6 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-            //preferences.getString("parameters", "&source=organic&pid=1")
-            //строку выше добавляем к запросу, она содержит параметры
         }
 
     }

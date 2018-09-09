@@ -15,9 +15,13 @@
  */
 package com.just_me.just_we.lastfmclient.core.extension
 
+import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 
 val Context.networkInfo: NetworkInfo? get() =
     (this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo
+
+val Activity.preferences: SharedPreferences  get() = getPreferences(Context.MODE_PRIVATE)
