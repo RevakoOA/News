@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.CheckedTextView
 import bsh.Interpreter
 import com.facebook.applinks.AppLinkData
 import com.just_me.news.core.exception.Failure
@@ -24,6 +26,10 @@ import com.just_me.news.news.R
 import com.just_me.news.utils.CountryCodeUtils
 import com.just_me.news.utils.MCrypt
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.include_list_viewpager.*
+import kotlinx.android.synthetic.main.search_layout.*
+import kotlinx.android.synthetic.main.search_layout.view.*
+import kotlinx.android.synthetic.main.toolbar_content.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "MainActivity"
     }
 
+    lateinit var search: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,6 +47,44 @@ class MainActivity : AppCompatActivity() {
         setViewPager()
         lockViewPager()
         codeRequest()
+        ivMenu.setOnClickListener {drawerLayout.openDrawer(GravityCompat.START)}
+        ivOptions.setOnClickListener {}
+        search = navView.getHeaderView(0)
+        search.tvcTopStories.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText()}
+        search.tvcMyNews.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText()}
+        search.tvcPopular.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+        search.tvcVideo.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+    }
+
+    private fun updateEditText() {
+        if (search.etSearch.text.isBlank()) {
+            var searchString: String = getString(R.string.search)
+            var list = ArrayList<String>(4)
+            if (search.tvcTopStories.isChecked) {
+                list.add(search.tvcTopStories.text.toString())
+            }
+            if (search.tvcMyNews.isChecked) {
+                list.add(search.tvcMyNews.text.toString())
+            }
+            if (search.tvcPopular.isChecked) {
+                list.add(search.tvcPopular.text.toString())
+            }
+            if (search.tvcVideo.isChecked) {
+                list.add(search.tvcVideo.text.toString())
+            }
+            if (list.size == 4) {
+                searchString += " " + getString(R.string.everywhere)
+                search.etSearch.hint = searchString
+                return
+            }
+            if (list.size == 0) {
+                search.etSearch.hint = searchString
+                return
+            }
+            searchString += list.joinToString(", ", " ${getString(R.string.prefix)} ")
+            search.etSearch.hint = searchString
+            return
+        }
     }
 
     private fun codeRequest() {
@@ -59,23 +105,10 @@ class MainActivity : AppCompatActivity() {
         getIt()
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
-            android.R.id.home -> {
-                drawerLayout.openDrawer(GravityCompat.START)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun setActionBar() {
         setSupportActionBar(toolbar as Toolbar)
         supportActionBar?.apply {
             setDisplayShowTitleEnabled(false)
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
         }
     }
 
@@ -117,7 +150,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.example_menu, menu)
-        return true
+        return false
     }
 
     private fun getIt() {

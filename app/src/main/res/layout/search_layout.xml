@@ -12,10 +12,13 @@
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:background="@color/white_card_back"
+        android:background="@drawable/shape_rounded_white"
         android:hint="@string/search"
         android:inputType="textFilter"
-        android:padding="4dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,62 +26,66 @@
 
     <ImageView
         android:id="@+id/ivClose"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/shape_rounded"
+        android:background="@drawable/shape_rounded_white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
-    <TextView
-        style="@style/WhiteSearchTextView"
-        android:id="@+id/tvTopStories"
-        android:text="top Stories"
+    <CheckedTextView
+        android:id="@+id/tvcTopStories"
+        style="@style/WhiteSearchCheckedTextView"
+        android:text="Top Stories"
+        app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/etSearch" />
 
     <View
         style="@style/ViewDivider"
         android:id="@+id/v1"
-        app:layout_constraintTop_toBottomOf="@+id/tvTopStories" />
+        app:layout_constraintTop_toBottomOf="@+id/tvcTopStories" />
 
-    <TextView
-        style="@style/WhiteSearchTextView"
-        android:id="@+id/tvMyNews"
+    <CheckedTextView
+        android:id="@+id/tvcMyNews"
+        style="@style/WhiteSearchCheckedTextView"
         android:text="My News"
+        app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/v1" />
 
     <View
         style="@style/ViewDivider"
         android:id="@+id/v2"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyNews" />
+        app:layout_constraintTop_toBottomOf="@+id/tvcMyNews" />
 
-    <TextView
-        style="@style/WhiteSearchTextView"
-        android:id="@+id/tvPopular"
+    <CheckedTextView
+        android:id="@+id/tvcPopular"
+        style="@style/WhiteSearchCheckedTextView"
         android:text="Popular"
+        app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/v2" />
 
     <View
         style="@style/ViewDivider"
         android:id="@+id/v3"
-        app:layout_constraintTop_toBottomOf="@+id/tvPopular" />
+        app:layout_constraintTop_toBottomOf="@+id/tvcPopular" />
 
-    <TextView
-        style="@style/WhiteSearchTextView"
-        android:id="@+id/tvVideo"
+    <CheckedTextView
+        android:id="@+id/tvcVideo"
+        style="@style/WhiteSearchCheckedTextView"
         android:text="Video"
+        app:layout_constraintEnd_toEndOf="@+id/etSearch"
         app:layout_constraintStart_toStartOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/v3" />
 
     <View
         style="@style/ViewDivider"
         android:id="@+id/v4"
-        app:layout_constraintTop_toBottomOf="@+id/tvVideo" />
+        app:layout_constraintTop_toBottomOf="@+id/tvcVideo" />
 
 
 </android.support.constraint.ConstraintLayout>

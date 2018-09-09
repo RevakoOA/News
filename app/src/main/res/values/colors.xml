@@ -6,4 +6,6 @@
     <color name="white_card_back">#FEFEFE</color>
     <color name="white_activity_back">#F2F2F2</color>
     <color name="dark_transparent">#65000000</color>
+
+    <color name="text_black">#050505</color>
 </resources>
