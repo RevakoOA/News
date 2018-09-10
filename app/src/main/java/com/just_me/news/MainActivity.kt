@@ -18,6 +18,8 @@ import android.widget.TextView
 import bsh.Interpreter
 import com.facebook.applinks.AppLinkData
 import com.just_me.just_we.lastfmclient.core.extension.preferences
+import com.just_me.news.core.arch.BaseActivity
+import com.just_me.news.core.arch.BaseContract
 import com.just_me.news.core.exception.Failure
 import com.just_me.news.core.platform.NetworkHandler
 import com.just_me.news.net.CodeUseCase
@@ -36,7 +38,9 @@ import kotlinx.android.synthetic.main.tab_layout.view.*
 import kotlinx.android.synthetic.main.toolbar_content.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+        BaseActivity<MainActivityContract.View, MainActivityContract.Presenter>(),
+        MainActivityContract.View {
 
     companion object {
         const val TAG = "MainActivity"
@@ -44,6 +48,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var search: View
     private lateinit var pagerAdapter: MainPagerAdapter
+
+    override fun initPresenter(): MainActivityContract.Presenter = MainActivityPresenter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

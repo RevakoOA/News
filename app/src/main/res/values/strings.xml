@@ -17,4 +17,7 @@
     <string name="myNews">My News</string>
     <string name="popular">Popular</string>
     <string name="video">Video</string>
+
+    <string name="sort_by_time">By time</string>
+    <string name="sort_by_topic">By topic</string>
 </resources>

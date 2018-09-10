@@ -9,9 +9,9 @@
         android:contentDescription="Content"
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/load"
-        android:background="@color/colorPrimary"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/news_placeholder"
         />
 
     <TextView

@@ -1,6 +1,7 @@
 package com.just_me.news.news
 
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.just_me.news.MyRecyclerAdapter
@@ -61,11 +63,21 @@ class MyNewsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val selectorVisibility = arguments?.getBoolean(IS_SELECTOR_VISIBLE, true)?:true
         hideSelector(!selectorVisibility)
+        tlSortSelector.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+            var currentToast: Toast? = null
+            override fun onTabReselected(p0: TabLayout.Tab?) {}
+            override fun onTabUnselected(p0: TabLayout.Tab?) {}
+            override fun onTabSelected(p0: TabLayout.Tab?) {
+                currentToast?.cancel()
+                currentToast = Toast.makeText(activity, p0?.text, Toast.LENGTH_SHORT)
+                currentToast?.show()
+            }
+        })
         dataUseCase(UseCase.None()) {it.either(::handleFailure,::handleData)}
     }
 
     private fun hideSelector(hide: Boolean) {
-        selector.visibility = if (hide) GONE else VISIBLE
+        tlSortSelector.visibility = if (hide) GONE else VISIBLE
     }
 
     /**
