@@ -36,7 +36,7 @@ class MyRecyclerAdapter(val items: ArrayList<RecyclerData>): RecyclerView.Adapte
         holder.itemView.llContent.setOnClickListener {
             it.tvText.visibility = if (it.tvText.visibility == GONE) VISIBLE else GONE
             itemsIsOpen[position] = it.tvText.visibility == VISIBLE
-            notifyItemChanged(position)
+            notifyItemRangeChanged(maxOf(position-1, 0), 3)
         }
     }
 
