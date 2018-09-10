@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.KeyEvent
@@ -19,22 +18,20 @@ import bsh.Interpreter
 import com.facebook.applinks.AppLinkData
 import com.just_me.just_we.lastfmclient.core.extension.preferences
 import com.just_me.news.core.arch.BaseActivity
-import com.just_me.news.core.arch.BaseContract
 import com.just_me.news.core.exception.Failure
 import com.just_me.news.core.platform.NetworkHandler
 import com.just_me.news.net.CodeUseCase
 import com.just_me.news.net.DataRepository
 import com.just_me.news.net.ServiceApi
 import com.just_me.news.news.MainPagerAdapter
-import com.just_me.news.news.MyNewsFragment
-import com.just_me.news.news.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
+import com.just_me.news.myNews.MyNewsFragment
+import com.just_me.news.myNews.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
+import com.just_me.news.myNews.NewsApplication
 import com.just_me.news.news.R
 import com.just_me.news.utils.CountryCodeUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_list_viewpager.*
-import kotlinx.android.synthetic.main.include_list_viewpager.view.*
 import kotlinx.android.synthetic.main.search_layout.view.*
-import kotlinx.android.synthetic.main.tab_layout.view.*
 import kotlinx.android.synthetic.main.toolbar_content.*
 
 
@@ -47,12 +44,14 @@ class MainActivity :
     }
 
     lateinit var search: View
+    lateinit var viewModel: MainViewModel
     private lateinit var pagerAdapter: MainPagerAdapter
 
     override fun initPresenter(): MainActivityContract.Presenter = MainActivityPresenter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = createViewModel()
         setContentView(R.layout.activity_main)
         setActionBar()
         setViewPager()
@@ -61,7 +60,6 @@ class MainActivity :
 //        getIt()
         ivMenu.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
         ivOptions.setOnClickListener {}
-
     }
 
     private fun setSearch() {
@@ -194,13 +192,6 @@ class MainActivity :
 
     private fun lockViewPager() {
 
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.example_menu, menu)
-        return false
     }
 
     private fun getIt() {

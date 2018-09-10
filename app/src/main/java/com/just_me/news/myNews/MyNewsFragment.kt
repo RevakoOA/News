@@ -1,58 +1,44 @@
-package com.just_me.news.news
+package com.just_me.news.myNews
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.just_me.news.MyRecyclerAdapter
-import com.just_me.news.NewsApplication
-import com.just_me.news.RecyclerData
-import com.just_me.news.core.exception.Failure
-import com.just_me.news.core.platform.NetworkHandler
-import com.just_me.news.net.*
+import com.just_me.news.core.arch.BaseContract
+import com.just_me.news.core.arch.BaseFragment
+import com.just_me.news.core.arch.BaseViewModel
+import com.just_me.news.news.R
 import kotlinx.android.synthetic.main.fragment_my_news.*
 
-class MyNewsFragment: Fragment() {
+class MyNewsFragment: BaseFragment<MyNewsContract.View, MyNewsContract.Presenter, MyNewsFragmentViewModel>(), MyNewsContract.View {
 
     companion object {
         const val TAG = "MyNewsFragment"
         const val IS_SELECTOR_VISIBLE = "isSelectorVisible"
     }
 
-    lateinit var dataUseCase: DataRecyclerUseCase
-    lateinit var serviceApi: ServiceApi
-    lateinit var datas : ArrayList<RecyclerData>
-    lateinit var adapter: MyRecyclerAdapter
+    val adapter = MyRecyclerAdapter()
+    lateinit var viewModel: MyNewsFragmentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        serviceApi = (activity?.applicationContext as NewsApplication).retrofit.create(ServiceApi::class.java)
-        val network = DataRepository.Network(NetworkHandler(context!!), serviceApi)
-        dataUseCase = DataRecyclerUseCase(network)
-    }
+        viewModel = createViewModel()
+        viewModel.isSelectorVisible.observe(this, Observer {
+            showSelector(it!!)
+        })
+        viewModel.listOfRecyclerData.observe(this, Observer {
+            if (it != null) {
+                adapter.items = it
+            }
+        })
 
-    protected fun handleFailure(failure: Failure) {
-        Log.e(TAG, failure.toString())
-    }
-
-    private fun handleData(data: ArrayList<RecyclerData>) {
-        datas = data
-        if (!::adapter.isInitialized) {
-            adapter = MyRecyclerAdapter(datas)
-        } else {
-            adapter
-        }
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
-        recyclerView.adapter = adapter
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -61,8 +47,7 @@ class MyNewsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val selectorVisibility = arguments?.getBoolean(IS_SELECTOR_VISIBLE, true)?:true
-        hideSelector(!selectorVisibility)
+        viewModel.isSelectorVisible.value = arguments?.getBoolean(IS_SELECTOR_VISIBLE, true)?:true
         tlSortSelector.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             var currentToast: Toast? = null
             override fun onTabReselected(p0: TabLayout.Tab?) {}
@@ -73,11 +58,8 @@ class MyNewsFragment: Fragment() {
                 currentToast?.show()
             }
         })
-        dataUseCase(UseCase.None()) {it.either(::handleFailure,::handleData)}
-    }
-
-    private fun hideSelector(hide: Boolean) {
-        tlSortSelector.visibility = if (hide) GONE else VISIBLE
+        recyclerView.layoutManager = GridLayoutManager(activity, 2)
+        recyclerView.adapter = adapter
     }
 
     /**
@@ -85,5 +67,15 @@ class MyNewsFragment: Fragment() {
      */
     fun filterItems(s: String) {
         adapter.filterDatas(s)
+    }
+
+    override fun initPresenter(): MyNewsContract.Presenter = MyNewsPresenter()
+
+    override fun getApplication(): NewsApplication = activity!!.applicationContext as NewsApplication
+
+    override fun viewModel() = viewModel
+
+    override fun showSelector(show: Boolean) {
+        tlSortSelector.visibility = if (show) VISIBLE else GONE
     }
 }

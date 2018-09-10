@@ -1,7 +1,6 @@
 package com.just_me.news.net
 
-import com.google.gson.JsonObject
-import com.just_me.news.RecyclerData
+import com.just_me.news.myNews.RecyclerData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -1,4 +1,4 @@
-package com.just_me.news
+package com.just_me.news.myNews
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -9,16 +9,25 @@ import com.just_me.news.core.extension.inflate
 import com.just_me.news.core.extension.loadFromUrl
 import com.just_me.news.news.R
 import kotlinx.android.synthetic.main.item_recycler.view.*
+import kotlin.properties.Delegates
 
-class MyRecyclerAdapter(val items: ArrayList<RecyclerData>): RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder>() {
-    var itemsToShow: ArrayList<RecyclerData>
-    var itemsIsOpen: ArrayList<Boolean>
-    init {
+class MyRecyclerAdapter: RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder>() {
+
+    var itemsToShow: ArrayList<RecyclerData> = ArrayList()
+    var itemsIsOpen: ArrayList<Boolean> = ArrayList()
+
+        internal var items: ArrayList<RecyclerData> by Delegates.observable(ArrayList()) {
+        _, _, _ -> updateItems()
+        }
+
+    private fun updateItems() {
         itemsToShow = ArrayList(items.size)
         itemsToShow.addAll(items)
         itemsIsOpen = ArrayList(items.size)
         itemsIsOpen.addAll(items.map { false })
+        notifyDataSetChanged()
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.item_recycler))

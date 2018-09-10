@@ -1,4 +1,4 @@
-package com.just_me.news
+package com.just_me.news.myNews
 
 import android.app.Application
 import com.facebook.FacebookSdk

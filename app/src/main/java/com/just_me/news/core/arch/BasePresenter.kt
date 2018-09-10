@@ -37,8 +37,8 @@ abstract class BasePresenter<V: BaseContract.View>: LifecycleObserver, BaseContr
         }
     }
 
-    @OnLifecycleEvent(value = Lifecycle.Event.ON_CREATE)
-    fun onCreate() {
-        Log.d(TAG, "onCreate called with Lifecycle.Event")
-    }
+//    @OnLifecycleEvent(value = Lifecycle.Event.ON_CREATE)
+//    fun onCreate() {
+//        Log.d(TAG, "onCreate called with Lifecycle.Event")
+//    }
 }
