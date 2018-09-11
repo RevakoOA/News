@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
-import android.support.v4.view.ViewPager
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ import com.just_me.news.myNews.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
 import com.just_me.news.news.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_list_viewpager.*
-import kotlinx.android.synthetic.main.include_list_viewpager.view.*
 import kotlinx.android.synthetic.main.search_layout.view.*
 import kotlinx.android.synthetic.main.toolbar_content.*
 
@@ -32,7 +30,7 @@ class MainActivity :
         const val TAG = "MainActivity"
     }
 
-    lateinit var search: View
+    lateinit var searchLayout: View
     lateinit var viewModel: MainViewModel
     private lateinit var pagerAdapter: MainPagerAdapter
 
@@ -50,36 +48,36 @@ class MainActivity :
     }
 
     private fun setSearch() {
-        search = navView.getHeaderView(0)
-        search.apply {
+        searchLayout = navView.getHeaderView(0)
+        searchLayout.apply {
             val updateEditTextHint = fun() {
-                if (search.etSearch.text.isBlank()) {
+                if (searchLayout.etSearch.text.isBlank()) {
                     var searchString: String = getString(R.string.search)
                     var list = ArrayList<String>(4)
-                    if (search.tvcTopStories.isChecked) {
-                        list.add(search.tvcTopStories.text.toString())
+                    if (searchLayout.tvcTopStories.isChecked) {
+                        list.add(searchLayout.tvcTopStories.text.toString())
                     }
-                    if (search.tvcMyNews.isChecked) {
-                        list.add(search.tvcMyNews.text.toString())
+                    if (searchLayout.tvcMyNews.isChecked) {
+                        list.add(searchLayout.tvcMyNews.text.toString())
                     }
-                    if (search.tvcPopular.isChecked) {
-                        list.add(search.tvcPopular.text.toString())
+                    if (searchLayout.tvcPopular.isChecked) {
+                        list.add(searchLayout.tvcPopular.text.toString())
                     }
-                    if (search.tvcVideo.isChecked) {
-                        list.add(search.tvcVideo.text.toString())
+                    if (searchLayout.tvcVideo.isChecked) {
+                        list.add(searchLayout.tvcVideo.text.toString())
                     }
                     if (list.size == 4) {
                         searchString += " " + getString(R.string.everywhere)
-                        search.etSearch.hint = searchString
+                        searchLayout.etSearch.hint = searchString
                         return
                     }
                     if (list.size == 0) {
                         searchString += " " + getString(R.string.everywhere)
-                        search.etSearch.hint = searchString
+                        searchLayout.etSearch.hint = searchString
                         return
                     }
                     searchString += list.joinToString(", ", " ${getString(R.string.prefix)} ")
-                    search.etSearch.hint = searchString
+                    searchLayout.etSearch.hint = searchString
                     return
                 }
             }
