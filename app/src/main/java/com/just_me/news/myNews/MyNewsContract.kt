@@ -7,7 +7,6 @@ interface MyNewsContract {
 
     interface View: BaseContract.View {
         fun showSelector(show: Boolean)
-        fun getApplication(): NewsApplication
         fun viewModel(): MyNewsFragmentViewModel
     }
 

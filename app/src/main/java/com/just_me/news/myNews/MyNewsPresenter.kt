@@ -24,8 +24,8 @@ class MyNewsPresenter: BasePresenter<MyNewsContract.View>(), MyNewsContract.Pres
 
     @OnLifecycleEvent(value = Lifecycle.Event.ON_START)
     fun onStart() {
-        serviceApi = view!!.getApplication().retrofit.create(ServiceApi::class.java)
-        val network = DataRepository.Network(NetworkHandler(view!!.getApplication()), serviceApi)
+        serviceApi = view!!.application().retrofit.create(ServiceApi::class.java)
+        val network = DataRepository.Network(NetworkHandler(view!!.application()), serviceApi)
         dataUseCase = DataRecyclerUseCase(network)
         dataUseCase(UseCase.None()) {it.either(::handleFailure,::handleData)}
     }

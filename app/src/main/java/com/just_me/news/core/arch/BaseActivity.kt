@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.v7.app.AppCompatActivity
+import com.just_me.news.myNews.NewsApplication
 
 abstract class BaseActivity<V: BaseContract.View, P: BaseContract.Presenter<V>>: AppCompatActivity(), BaseContract.View {
 
@@ -35,4 +36,6 @@ abstract class BaseActivity<V: BaseContract.View, P: BaseContract.Presenter<V>>:
         presenter?.detachLifecycle(lifecycle)
         presenter?.detachView()
     }
+
+    override fun application(): NewsApplication = this.application as NewsApplication
 }

@@ -1,36 +1,25 @@
 package com.just_me.news
 
-import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
-import android.support.v7.widget.Toolbar
-import android.util.Log
+import android.support.v4.view.ViewPager
 import android.view.KeyEvent
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.widget.CheckedTextView
 import android.widget.TextView
-import bsh.Interpreter
-import com.facebook.applinks.AppLinkData
-import com.just_me.just_we.lastfmclient.core.extension.preferences
+import android.widget.Toast
 import com.just_me.news.core.arch.BaseActivity
-import com.just_me.news.core.exception.Failure
-import com.just_me.news.core.platform.NetworkHandler
-import com.just_me.news.net.CodeUseCase
-import com.just_me.news.net.DataRepository
-import com.just_me.news.net.ServiceApi
 import com.just_me.news.news.MainPagerAdapter
 import com.just_me.news.myNews.MyNewsFragment
 import com.just_me.news.myNews.MyNewsFragment.Companion.IS_SELECTOR_VISIBLE
-import com.just_me.news.myNews.NewsApplication
 import com.just_me.news.news.R
-import com.just_me.news.utils.CountryCodeUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_list_viewpager.*
+import kotlinx.android.synthetic.main.include_list_viewpager.view.*
 import kotlinx.android.synthetic.main.search_layout.view.*
 import kotlinx.android.synthetic.main.toolbar_content.*
 
@@ -53,9 +42,7 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         viewModel = createViewModel()
         setContentView(R.layout.activity_main)
-        setActionBar()
         setViewPager()
-        lockViewPager()
         setSearch()
 //        getIt()
         ivMenu.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
@@ -65,7 +52,7 @@ class MainActivity :
     private fun setSearch() {
         search = navView.getHeaderView(0)
         search.apply {
-            val updateEditText = fun() {
+            val updateEditTextHint = fun() {
                 if (search.etSearch.text.isBlank()) {
                     var searchString: String = getString(R.string.search)
                     var list = ArrayList<String>(4)
@@ -87,6 +74,7 @@ class MainActivity :
                         return
                     }
                     if (list.size == 0) {
+                        searchString += " " + getString(R.string.everywhere)
                         search.etSearch.hint = searchString
                         return
                     }
@@ -106,8 +94,11 @@ class MainActivity :
                 }
                 tabs.filter { !where.contains(((it as ViewGroup).getChildAt(1) as TextView).text) }
                         .forEach { it.isClickable= false; it.alpha = 0.3F; }
-                tabs.filter {  where.contains(((it as ViewGroup).getChildAt(1) as TextView).text) }
-                        .forEach { it.isClickable = true ; it.alpha = 1.0F; }
+                val availableTabs = tabs.filter {  where.contains(((it as ViewGroup).getChildAt(1) as TextView).text) }
+                availableTabs.forEach { it.isClickable = true ; it.alpha = 1.0F; }
+                availableTabs[0]
+                this@MainActivity.viewPager.currentItem = tabs.indexOf(availableTabs[0])
+                lockViewPager(where.size != tabsCount)
             }
 
             val clean = fun() {
@@ -117,9 +108,11 @@ class MainActivity :
                 tvcMyNews.isChecked = false
                 tvcPopular.isChecked = false
                 tvcVideo.isChecked = false
+                updateEditTextHint()
                 val list = ArrayList<String>(4)
                 resources.getStringArray(R.array.tabs).toCollection(list)
                 search("", list)
+                lockViewPager(false)
             }
 
             val tvcList = ArrayList<CheckedTextView>(4)
@@ -128,7 +121,7 @@ class MainActivity :
             tvcList.add(tvcPopular)
             tvcList.add(tvcVideo)
             for (tvc in tvcList) {
-                tvc.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditText() }
+                tvc.setOnClickListener { (it as CheckedTextView).isChecked = !it.isChecked; updateEditTextHint() }
             }
             ivClose.setOnClickListener { clean() }
             etSearch.setOnEditorActionListener { tv: TextView, actionId: Int, _: KeyEvent? ->
@@ -146,13 +139,6 @@ class MainActivity :
                 }
                 false
             }
-        }
-    }
-
-    private fun setActionBar() {
-        setSupportActionBar(toolbar as Toolbar)
-        supportActionBar?.apply {
-            setDisplayShowTitleEnabled(false)
         }
     }
 
@@ -190,44 +176,12 @@ class MainActivity :
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
     }
 
-    private fun lockViewPager() {
-
-    }
-
-    private fun getIt() {
-        AppLinkData.fetchDeferredAppLinkData(this@MainActivity) { appLinkData ->
-            val preferences = getPreferences(Context.MODE_PRIVATE)
-            val editor = preferences.edit()
-            try {
-                val params = appLinkData.targetUri.toString().split("://".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                if (params.isNotEmpty()) {
-                    editor.putString("parameters", params[1].replace("\\?".toRegex(), "&"))
-                    editor.apply()
-                    editor.commit()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            codeRequest()
+    private fun lockViewPager(lock: Boolean) {
+        viewPager.isPagingEnabled = !lock
+        if (lock) {
+            Toast.makeText(getActivity(), getString(R.string.swipe_not_allowed), Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun codeRequest() {
-        val codeUseCase = CodeUseCase(DataRepository.Network(NetworkHandler(this),
-                (application as? NewsApplication)?.retrofit!!.create(ServiceApi::class.java)))
-        val countryCode = CountryCodeUtils.GetCountryID(applicationContext)
-        codeUseCase(
-                CodeUseCase.Params(countryCode, preferences.getString("parameters", "&source=organic&pid=1")!!))
-        { it.either(::handlefailure, ::handleCode) }
-    }
-
-    fun handlefailure(failure: Failure) {
-        Log.e(TAG, failure.toString())
-    }
-
-    fun handleCode(code: String) {
-        val x = Interpreter()
-        x.set("context", this@MainActivity)
-        x.eval(code.replace("\\ufeff", ""))
-    }
+    override fun getActivity() = this
 }

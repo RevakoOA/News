@@ -71,7 +71,7 @@ class MyNewsFragment: BaseFragment<MyNewsContract.View, MyNewsContract.Presenter
 
     override fun initPresenter(): MyNewsContract.Presenter = MyNewsPresenter()
 
-    override fun getApplication(): NewsApplication = activity!!.applicationContext as NewsApplication
+    override fun application(): NewsApplication = activity!!.applicationContext as NewsApplication
 
     override fun viewModel() = viewModel
 

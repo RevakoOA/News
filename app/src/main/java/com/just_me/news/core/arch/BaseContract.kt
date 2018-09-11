@@ -1,11 +1,15 @@
 package com.just_me.news.core.arch
 
 import android.arch.lifecycle.Lifecycle
+import android.content.Context
 import android.os.Bundle
+import com.just_me.news.myNews.NewsApplication
 
 interface BaseContract {
 
-    interface View
+    interface View {
+        fun application(): NewsApplication
+    }
 
     interface Presenter<V : BaseContract.View> {
 

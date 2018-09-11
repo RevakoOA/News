@@ -20,4 +20,6 @@
 
     <string name="sort_by_time">By time</string>
     <string name="sort_by_topic">By topic</string>
+
+    <string name="swipe_not_allowed">Swipe not allowed in current search state</string>
 </resources>
