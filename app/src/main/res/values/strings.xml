@@ -1,7 +1,5 @@
 <resources>
     <string name="facebook_app_id">235203460504696</string>
-
-    <string name="app_name">News</string>
     <string name="search">Search</string>
     <string name="everywhere">everywhere</string>
     <string name="prefix"> in </string>

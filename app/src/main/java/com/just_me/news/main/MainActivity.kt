@@ -42,7 +42,6 @@ class MainActivity :
         setContentView(R.layout.activity_main)
         setViewPager()
         setSearch()
-//        getIt()
         ivMenu.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
         ivOptions.setOnClickListener {}
     }

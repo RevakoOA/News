@@ -1,9 +1,8 @@
 package com.just_me.news.core.arch
 
 import android.arch.lifecycle.Lifecycle
-import android.content.Context
 import android.os.Bundle
-import com.just_me.news.myNews.NewsApplication
+import com.just_me.news.NewsApplication
 
 interface BaseContract {
 
@@ -17,7 +16,7 @@ interface BaseContract {
 
         var view: V?
 
-        val isViewAttached: Boolean
+        fun isViewAttached(): Boolean
 
         fun attachLifecycle(lifecycle: Lifecycle)
 

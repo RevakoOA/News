@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.v7.app.AppCompatActivity
-import com.just_me.news.myNews.NewsApplication
+import com.just_me.news.NewsApplication
 
 abstract class BaseActivity<V: BaseContract.View, P: BaseContract.Presenter<V>>: AppCompatActivity(), BaseContract.View {
 
@@ -21,9 +21,9 @@ abstract class BaseActivity<V: BaseContract.View, P: BaseContract.Presenter<V>>:
     inline fun <reified VM: BaseViewModel<V, P>> createViewModel(): VM {
         val viewModel = ViewModelProviders.of(this)[VM::class.java]
         viewModel.presenter = initPresenter()
-        presenter = viewModel.presenter as P
-        presenter?.attachLifecycle(lifecycle)
-        presenter?.attachView(this as V)
+        `access$presenter` = viewModel.presenter as P
+        `access$presenter`?.attachLifecycle(lifecycle)
+        `access$presenter`?.attachView(this as V)
         return viewModel
     }
 
@@ -38,4 +38,10 @@ abstract class BaseActivity<V: BaseContract.View, P: BaseContract.Presenter<V>>:
     }
 
     override fun application(): NewsApplication = this.application as NewsApplication
+    @PublishedApi
+    internal var `access$presenter`: P?
+        get() = presenter
+        set(value) {
+            presenter = value
+        }
 }

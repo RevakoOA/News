@@ -14,9 +14,9 @@ abstract class BasePresenter<V: BaseContract.View>: LifecycleObserver, BaseContr
 
     override var stateBundle: Bundle = Bundle.EMPTY
 
-    override var view: V? = null
+    final override var view: V? = null
 
-    override val isViewAttached: Boolean = view != null
+    override fun isViewAttached(): Boolean = view != null
 
     override fun attachLifecycle(lifecycle: Lifecycle) {
         lifecycle.addObserver(this)

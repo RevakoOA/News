@@ -4,16 +4,14 @@ import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
-import com.just_me.news.core.arch.BaseContract
+import com.just_me.news.NewsApplication
 import com.just_me.news.core.arch.BaseFragment
-import com.just_me.news.core.arch.BaseViewModel
 import com.just_me.news.news.R
 import kotlinx.android.synthetic.main.fragment_my_news.*
 
