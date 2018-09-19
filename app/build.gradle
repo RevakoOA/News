@@ -9,7 +9,7 @@ android {
         config {
             keyAlias 'just_me'
             keyPassword 'keypassm'
-            storeFile file('/home/just-me/Dropbox/Documents/Work/just_me.jks')
+            storeFile file('just_me.jks')
             storePassword 'keypassj'
         }
     }
